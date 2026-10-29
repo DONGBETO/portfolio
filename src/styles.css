@@ -1,0 +1,176 @@
+/* Concept : identité fixe à gauche (photo, nom, navigation, contacts), contenu qui défile à droite.
+   Fond nuit, accent or (signature), violet réservé à l'IA, halo lumineux qui suit la souris. */
+:root {
+  --bg: #0b1020;
+  --surface: #121a2f;
+  --surface-2: #18223b;
+  --line: #243150;
+  --text: #e6eaf5;
+  --muted: #94a0bd;
+  --dim: #66728f;
+  --accent: #f2b84b;
+  --accent-soft: rgba(242, 184, 75, .12);
+  --ai: #a98bfa;
+  --ai-soft: rgba(169, 139, 250, .12);
+  --ok: #6fd3a0;
+  --f-head: "Sora", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-body: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box }
+html { scroll-behavior: smooth }
+body { margin: 0; background: var(--bg); color: var(--muted); font-family: var(--f-body); font-size: 16px; line-height: 1.7; -webkit-font-smoothing: antialiased }
+::selection { background: var(--accent); color: var(--bg) }
+img { max-width: 100% }
+a { color: inherit; text-decoration: none }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px }
+b, strong { color: var(--text); font-weight: 600 }
+
+.skip { position: absolute; left: -9999px; top: 8px; background: var(--accent); color: var(--bg); padding: 8px 14px; border-radius: 6px; z-index: 20; font-weight: 700 }
+.skip:focus { left: 16px }
+
+.glow { position: fixed; inset: 0; pointer-events: none; z-index: 0; background: radial-gradient(600px circle at var(--x, 20%) var(--y, 10%), rgba(242, 184, 75, .07), transparent 70%) }
+
+.layout {
+  position: relative; z-index: 1; max-width: 1240px; margin: 0 auto;
+  padding-left: max(24px, env(safe-area-inset-left, 0px)); padding-right: max(24px, env(safe-area-inset-right, 0px));
+  display: grid; grid-template-columns: 1fr 1.1fr; gap: 64px;
+}
+.layout > * { min-width: 0 }
+
+/* ---------- colonne gauche ---------- */
+.side { position: sticky; top: 0; height: 100vh; height: 100dvh; padding-block: 88px 64px; display: flex; flex-direction: column; justify-content: space-between; gap: 32px }
+.photo { position: relative; width: 104px; height: 104px; margin-bottom: 28px }
+.photo img, .photo-fallback { width: 100%; height: 100%; object-fit: cover; border-radius: 28px; border: 1px solid var(--line); display: block }
+.photo-fallback { display: grid; place-items: center; font-family: var(--f-head); font-weight: 700; font-size: 34px; color: var(--accent); background: linear-gradient(140deg, var(--surface-2), var(--surface)) }
+.photo-dot { position: absolute; right: -2px; bottom: -2px; width: 22px; height: 22px; border-radius: 50%; background: var(--ok); border: 4px solid var(--bg) }
+
+.side h1 { font-family: var(--f-head); font-weight: 700; color: var(--text); font-size: clamp(36px, 4.4vw, 52px); line-height: 1.05; letter-spacing: -.035em; margin: 0 }
+.side h1 span { color: var(--accent) }
+.side h2 { font-family: var(--f-head); font-weight: 500; color: var(--text); font-size: 20px; letter-spacing: -.01em; margin: 14px 0 2px }
+.side-sub { margin: 0; font-size: 14px; font-weight: 600; color: var(--dim); letter-spacing: .02em }
+.side-tag { max-width: 34ch; margin: 18px 0 0; font-size: 16px }
+
+.nav { margin-top: 56px }
+.nav ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px }
+.nav a { display: inline-flex; align-items: center; gap: 16px; padding: 6px 0; font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--dim); transition: color .2s }
+.nav-line { width: 32px; height: 1px; background: currentColor; transition: width .25s ease, background .25s }
+.nav a:hover, .nav a.on { color: var(--text) }
+.nav a:hover .nav-line, .nav a.on .nav-line { width: 64px }
+.nav a.on .nav-line { background: var(--accent) }
+
+.avail { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; color: var(--text); margin: 0 0 16px }
+.pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); flex: none; animation: pulse 2s infinite }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(111, 211, 160, .6) } 70% { box-shadow: 0 0 0 8px rgba(111, 211, 160, 0) } 100% { box-shadow: 0 0 0 0 rgba(111, 211, 160, 0) } }
+.side-actions { display: flex; align-items: center; gap: 20px; flex-wrap: wrap }
+.socials { list-style: none; display: flex; gap: 16px; margin: 0; padding: 0 }
+.socials a { display: grid; place-items: center; color: var(--muted); transition: color .2s, transform .2s }
+.socials a:hover { color: var(--accent); transform: translateY(-2px) }
+
+.btn { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; padding: 11px 18px; border-radius: 10px; border: 1px solid var(--accent); color: var(--accent); transition: background .2s, color .2s, transform .2s }
+.btn:hover { background: var(--accent-soft); transform: translateY(-2px) }
+.btn-solid { background: var(--accent); color: #1b1305; margin-top: 24px }
+.btn-solid:hover { background: #f6c76c; color: #1b1305 }
+
+/* ---------- colonne droite ---------- */
+main { padding-block: 88px 64px }
+.sec { margin-bottom: 112px; scroll-margin-top: 88px }
+.sec-title { font-size: 12px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--text); margin: 0 0 28px; display: flex; align-items: center; gap: 14px }
+.sec-title::after { content: ""; flex: 1; height: 1px; background: var(--line) }
+.prose { margin: 0 0 18px; max-width: 62ch }
+
+/* pills */
+.pills { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 0; padding: 0 }
+.pills li { font-size: 12px; font-weight: 600; color: var(--accent); background: var(--accent-soft); padding: 4px 12px; border-radius: 999px; line-height: 1.6 }
+.pills-ai li { color: var(--ai); background: var(--ai-soft) }
+
+/* IA */
+.ai-card { position: relative; border-radius: 18px; padding: 28px; background: linear-gradient(160deg, rgba(169, 139, 250, .1), transparent 55%), var(--surface); border: 1px solid rgba(169, 139, 250, .28); overflow: hidden }
+.ai-card::before { content: ""; position: absolute; width: 240px; height: 240px; right: -80px; top: -100px; background: radial-gradient(circle, rgba(169, 139, 250, .25), transparent 70%); pointer-events: none }
+.ai-badge { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ai) }
+.ai-intro { font-family: var(--f-head); font-size: 20px; line-height: 1.45; color: var(--text); font-weight: 500; margin: 12px 0 24px; max-width: 34ch; text-wrap: balance }
+.ai-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 12px }
+.ai-steps li { display: flex; gap: 14px; padding: 16px; border-radius: 12px; background: rgba(11, 16, 32, .55); border: 1px solid var(--line) }
+.ai-n { flex: none; width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; font-family: var(--f-head); font-size: 13px; font-weight: 700; color: var(--bg); background: var(--ai) }
+.ai-steps strong { display: block; font-size: 15px }
+.ai-steps p { margin: 2px 0 0; font-size: 14px; line-height: 1.55 }
+.ai-card .pills { margin-top: 22px }
+
+/* liste expérience / projets : cartes qui s'éclairent au survol */
+.list { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px }
+.item { position: relative; display: grid; grid-template-columns: 150px 1fr; gap: 20px; padding: 20px; margin-inline: -20px; border-radius: 14px; border: 1px solid transparent; transition: background .25s, border-color .25s, opacity .25s }
+.item > div { min-width: 0 }
+@media (hover: hover) and (min-width: 1024px) {
+  .list:hover .item { opacity: .5 }
+  .list .item:hover { opacity: 1; background: rgba(18, 26, 47, .7); border-color: var(--line); box-shadow: 0 20px 40px -24px rgba(0, 0, 0, .7) }
+  .list .item:hover h4 { color: var(--accent) }
+}
+.item-date { font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--dim); padding-top: 3px; font-variant-numeric: tabular-nums }
+.item h4 { font-family: var(--f-head); font-size: 17px; font-weight: 600; color: var(--text); margin: 0; line-height: 1.4; transition: color .2s }
+.item h4 .at { color: var(--muted); font-weight: 500 }
+.item-place { display: block; font-size: 13px; color: var(--dim); margin-top: 2px }
+.item p { margin: 8px 0 0; font-size: 15px }
+.arrow { display: inline-block; vertical-align: -1px; transition: transform .2s }
+a:hover .arrow { transform: translate(2px, -2px) }
+.stretch::after { content: ""; position: absolute; inset: 0; border-radius: 14px }
+
+.item-proj { grid-template-columns: 150px 1fr }
+.thumb { border-radius: 10px; overflow: hidden; border: 1px solid var(--line); aspect-ratio: 5 / 3; max-width: 100%; align-self: start; margin-top: 4px }
+.thumb svg { display: block; width: 100%; height: 100% }
+.plinks { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 10px 18px; margin-top: 14px }
+.plink { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 700; color: var(--text) }
+.plink svg:first-child { width: 15px; height: 15px }
+.plink:hover { color: var(--accent) }
+.plink-site { color: var(--accent) }
+.thumb img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top }
+.soon { margin: 20px 0 0; font-size: 14px; color: var(--dim); border-top: 1px dashed var(--line); padding-top: 16px }
+
+.more { display: inline-flex; align-items: center; gap: 6px; margin-top: 28px; font-weight: 700; color: var(--text); border-bottom: 1px solid var(--accent); padding-bottom: 2px }
+.more:hover { color: var(--accent) }
+
+/* compétences */
+.skills { margin: 0; display: grid; gap: 4px }
+.skills > div { display: grid; grid-template-columns: 150px 1fr; gap: 20px; padding: 12px 0; border-bottom: 1px solid var(--line) }
+.skills dt { font-size: 13px; font-weight: 700; color: var(--text); padding-top: 5px }
+.skills dd { margin: 0; min-width: 0 }
+.skills .pills { margin: 0 }
+.skills .is-ai dt { color: var(--ai) }
+.skills .is-ai .pills li { color: var(--ai); background: var(--ai-soft) }
+.langs { display: flex; flex-wrap: wrap; gap: 24px; margin: 24px 0 0; font-size: 14px }
+.langs b { margin-right: 6px }
+
+/* contact */
+.cta-big { font-family: var(--f-head); font-size: clamp(24px, 3vw, 32px); font-weight: 600; line-height: 1.25; letter-spacing: -.02em; color: var(--text); margin: 0 0 28px; text-wrap: balance }
+.cta-big span { color: var(--accent) }
+.crows { display: grid; gap: 10px }
+.crow { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 18px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line) }
+.crow > div { min-width: 0; display: grid }
+.crow-k { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim) }
+.crow a, .crow-v { color: var(--text); font-weight: 600; word-break: break-all }
+.crow a:hover { color: var(--accent) }
+.crow button { flex: none; font: inherit; font-size: 12px; font-weight: 700; color: var(--muted); background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; cursor: pointer; min-width: 78px }
+.crow button:hover { color: var(--accent); border-color: var(--accent) }
+.crow button.copied { color: var(--ok); border-color: var(--ok) }
+
+.foot { font-size: 13px; color: var(--dim); max-width: 46ch; padding-bottom: env(safe-area-inset-bottom, 0px) }
+
+/* ---------- responsive ---------- */
+@media (max-width: 1023px) {
+  .layout { grid-template-columns: 1fr; gap: 0; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)) }
+  .side { position: static; height: auto; padding-block: 56px 24px }
+  .nav { display: none }
+  main { padding-block: 24px 48px }
+  .sec { margin-bottom: 72px; scroll-margin-top: 24px }
+  .sec-title { position: sticky; top: 0; z-index: 2; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(8px); padding-block: 14px; margin-inline: -20px; padding-inline: 20px; margin-bottom: 16px }
+  .item { margin-inline: 0; padding: 16px 0 }
+}
+@media (max-width: 640px) {
+  .item, .item-proj, .skills > div { grid-template-columns: 1fr; gap: 6px }
+  .thumb { max-width: 220px; margin-bottom: 8px }
+  .ai-steps { grid-template-columns: 1fr }
+  .ai-card { padding: 22px }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important }
+  html { scroll-behavior: auto }
+}
